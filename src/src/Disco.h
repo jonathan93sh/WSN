@@ -5,15 +5,78 @@ enum{
 	TSLOTms = 25
 };
 
- 
+enum DiscoMsgTypes{
+	T_BEACON = 0,
+	T_REQUEST = 1,
+	T_PAYLOAD = 2
+};
+
+ // [DiscoMsg| Payload ]
  typedef nx_struct DiscoMsg {
  	nx_uint16_t nodeid;
  	nx_uint16_t counter;
  	nx_uint16_t timeslot;
  	nx_uint16_t prime1;
  	nx_uint16_t prime2;
+ 	nx_uint8_t type;
+ 	nx_uint8_t payload_len; //len=0 is just a beacon
+ 	nx_uint8_t checksum;
  } DiscoMsg;
 
+uint8_t calcCheckSumMsg(DiscoMsg* this);
+
+
+
+void createDiscoMsg(DiscoMsg* this,uint16_t nodeid,uint16_t counter, uint16_t timeslot, uint16_t prime1, uint16_t prime2, uint8_t type, uint8_t payload_len)
+{
+	this->nodeid = nodeid;
+	this->counter = counter;
+	this->timeslot = timeslot;
+	this->prime1 = prime1;
+	this->prime2 = prime2;
+	this->type = type;
+	this->payload_len = payload_len;
+	this->checksum = calcCheckSumMsg(this);
+}
+
+uint8_t calcCheckSumMsg(DiscoMsg* this)
+{
+	uint8_t i;
+	uint8_t checksum = 0;
+	for(i=0;i<sizeof(DiscoMsg)-1;i++)
+		checksum+=*(((uint8_t *)this)+i);
+	return checksum;
+}
+
+error_t getDiscoMsg(void *payload,DiscoMsg **msgPtr,void **msgPayload,uint8_t *len)
+{
+	*msgPtr = NULL;
+	*msgPayload = NULL;
+	*len = 0;
+	if(len <= sizeof(DiscoMsg)-1) //must have received a message from another protocol then disco.
+			return FAIL;
+		
+	DiscoMsg * dmHeader = (DiscoMsg *)payload;
+	
+	if(dmHeader->checksum != calcCheckSumMsg(dmHeader))
+		return FAIL;
+	
+	if(dmHeader->payload_len != len-sizeof(DiscoMsg))
+		return FAIL;
+	
+	if(dmHeader->type == T_REQUEST && dmHeader->payload_len != sizeof(uint16_t))
+		return FAIL;
+	
+	*msgPtr = dmHeader;
+		
+	if(dmHeader->payload_len != 0)
+	{
+		*msgPayload = ((uint8_t *)payload+sizeof(DiscoMsg));
+		*len = dmHeader->payload_len;
+	}
+	
+	return SUCCESS;
+}
 
 
 static const uint16_t primes[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59, \
@@ -25,7 +88,7 @@ static const uint16_t primes[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59
  
  static const float TH = 0.5f;
  
- error_t getPrimePairBalanceIDUnique(uint16_t ID, float DC, uint16_t* p1, uint16_t* p2, float *realDC)
+ error_t getPrimePairBalanceIDUnique(uint16_t ID, uint8_t DC, uint16_t* p1, uint16_t* p2, uint8_t *realDC)
  {
  	
  	uint16_t randomPrime1 = primes[ID%primesN];
@@ -73,7 +136,7 @@ static const uint16_t primes[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59
  		}	
  	}
  	
- 	*realDC = (1/(*p1*2)) + (1/(*p2*2));
+ 	*realDC = (uint8_t)((1/(*p1*2)) + (1/(*p2*2)));
  	
  	return failed;
  	

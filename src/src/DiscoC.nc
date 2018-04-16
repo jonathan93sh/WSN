@@ -19,12 +19,13 @@ module DiscoC{
 	}
 }
 implementation{
-
+	message_t pkt;//default packet header.
 	uint16_t prime1,prime2;
 	uint16_t counter = 0;
 	uint8_t DC = 0;
 	uint8_t ID = 0;
 	bool beaconEn = FALSE;
+	bool busy = FALSE;
 	//TOS_NODE_ID
 		
 	
@@ -87,11 +88,43 @@ implementation{
 	}
 
 	event message_t * Receive.receive(message_t *msg, void *payload, uint8_t len){
-		// TODO Auto-generated method stub
+		DiscoMsg *msgPtr;
+		void *msgPayload;
+		uint8_t payload_len;
+		
+		
+		if(getDiscoMsg(payload,&msgPtr,&msgPayload,&payload_len) == SUCCESS)
+		{
+			switch(msgPtr->type)
+			{
+				case T_BEACON:
+				case T_PAYLOAD:
+					signal Disco.received(msg, msgPayload, payload_len);
+				break;
+				case T_REQUEST:
+					//signal Disco.fetchPayload(void *buf, uint8_t *len)
+				break;
+				default:
+				break;
+			};
+			
+			
+		}
+		
+		return &pkt;
 	}
-	//functions
+	//methodes
 	void transmitBeacon()
 	{
+		if(!busy && beaconEn)
+		{
+			DiscoMsg * dmpkt = (DiscoMsg *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)));
+			createDiscoMsg(dmpkt,ID,counter,TSLOTms,prime1,prime2,T_BEACON,0);//create beacon msg
+			
+			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)) == SUCCESS) {
+				busy = TRUE;
+			}
+		}
 	}
 	
 	
