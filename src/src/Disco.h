@@ -2,7 +2,8 @@
 #define DISCO_H
 enum{
 	AM_RADIO = 6,
-	TSLOTms = 25
+	TSLOTms = 25,
+	T_TIMEOUT_ms = 5
 };
 
 enum DiscoMsgTypes{

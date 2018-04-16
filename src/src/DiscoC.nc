@@ -9,7 +9,7 @@ module DiscoC{
 
 	uses {
 		interface Timer<TMilli> as Timer0;
-		//interface Timer<TMilli> as Timer1;
+		interface Timer<TMilli> as Timer1;
 		// AM stuf
 		interface Packet;
 		interface AMPacket;
@@ -23,11 +23,16 @@ implementation{
 	uint16_t prime1,prime2;
 	uint16_t counter = 0;
 	uint8_t DC = 0;
-	uint8_t ID = 0;
+	uint16_t ID = 0;
 	bool beaconEn = FALSE;
 	bool busy = FALSE;
+	uint16_t connectNodeID = -1; 
+	nx_uint8_t packetBuffer[100];
 	//TOS_NODE_ID
-		
+	//prototypes
+	void transmitPacket(void *payload, uint8_t len);	
+	void transmitBeacon();
+	void transmitRequst();
 	
 // Disco - interface - start -------------------------------
 	command uint8_t Disco.setDutyCicle(uint8_t dutycycle){
@@ -52,7 +57,7 @@ implementation{
 
 	command error_t Disco.setBeaconMode(bool beacon){
 		beaconEn = TRUE;
-		return FALSE;
+		return SUCCESS;
 	}
 
 	command bool Disco.getBeaconMode(){
@@ -60,37 +65,54 @@ implementation{
 	}
 
 	command error_t Disco.requestBroadcast(){
-		// TODO Auto-generated method stub
-		return TRUE;
+		if(connectNodeID == (uint16_t)-1)
+			return FAIL;
+		
+		transmitRequst();
+			
+		return SUCCESS;
 	}
 	// Disco - interface - end -------------------------------
 	
 
 	event void Timer0.fired(){
-		if(counter%prime1 || counter%prime2)
+		if(!busy)
 		{
-			call AMControl.start();
+			if(counter%prime1 || counter%prime2)
+			{
+				call Timer1.startOneShot(TSLOTms-T_TIMEOUT_ms);
+				call AMControl.start();
+			}
+			else
+			{
+				call AMControl.stop();
+			}
 		}
 		counter++;
 	}
-
+	
+	event void Timer1.fired(){
+		transmitBeacon();
+	}
 
 	event void AMSend.sendDone(message_t *msg, error_t error){
-		// TODO Auto-generated method stub
+		busy = FALSE;
 	}
 
 	event void AMControl.startDone(error_t error){
-		// TODO Auto-generated method stub
+		if(error==SUCCESS)
+			transmitBeacon();
 	}
 
 	event void AMControl.stopDone(error_t error){
-		// TODO Auto-generated method stub
+		
 	}
 
 	event message_t * Receive.receive(message_t *msg, void *payload, uint8_t len){
 		DiscoMsg *msgPtr;
 		void *msgPayload;
 		uint8_t payload_len;
+		uint8_t Rlen;
 		
 		
 		if(getDiscoMsg(payload,&msgPtr,&msgPayload,&payload_len) == SUCCESS)
@@ -98,11 +120,21 @@ implementation{
 			switch(msgPtr->type)
 			{
 				case T_BEACON:
+					connectNodeID = msgPtr->nodeid;
+					signal Disco.received(msg, 0, 0,msgPtr->nodeid);
+					connectNodeID = -1;
+					break;
 				case T_PAYLOAD:
-					signal Disco.received(msg, msgPayload, payload_len);
-				break;
+					signal Disco.received(msg, msgPayload, payload_len,msgPtr->nodeid);
+					break;
 				case T_REQUEST:
-					//signal Disco.fetchPayload(void *buf, uint8_t *len)
+					if( *(nx_uint16_t*)msgPayload == ID)
+					{
+						if(signal Disco.fetchPayload(packetBuffer, &Rlen) == SUCCESS)
+						{
+							transmitPacket(packetBuffer,Rlen);
+						}
+					}
 				break;
 				default:
 				break;
@@ -127,5 +159,41 @@ implementation{
 		}
 	}
 	
+	void transmitPacket(void *payload, uint8_t len)
+	{
+		if(!busy)
+		{
+
+			uint8_t * DiscoPacket = (uint8_t *)(call Packet.getPayload(&pkt, (uint8_t)sizeof(DiscoMsg)+len));
+			
+			memcpy(pkt+sizeof(DiscoMsg),payload,len);
+			
+			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_PAYLOAD,len);
+			
+			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)) == SUCCESS) {
+				busy = TRUE;
+			}
+		}		
+	}
 	
+	void transmitRequst()
+	{
+		if(!busy)
+		{
+			uint8_t * DiscoPacket = (uint8_t *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)+sizeof(nx_uint16_t)));
+			
+			memcpy(DiscoPacket+sizeof(DiscoMsg),&connectNodeID,sizeof(nx_uint16_t));
+			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_REQUEST,0);//create beacon msg
+			
+			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)) == SUCCESS) {
+				busy = TRUE;
+			}
+		}	
+	}
+	
+	
+	
+	
+
+
 }
