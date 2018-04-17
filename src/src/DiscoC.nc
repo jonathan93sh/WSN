@@ -35,7 +35,7 @@ implementation{
 	void transmitRequst();
 	
 // Disco - interface - start -------------------------------
-	command uint8_t Disco.setDutyCicle(uint8_t dutycycle){
+	command uint8_t Disco.setDutyCycle(uint8_t dutycycle){
 		getPrimePairBalanceIDUnique(ID, dutycycle, &prime1, &prime2, &DC);
 		counter=0;
 		call Timer0.startPeriodic(TSLOTms);
@@ -46,12 +46,12 @@ implementation{
 		return DC;
 	}
 
-	command error_t Disco.setNodeClass(uint8_t classid){
+	command error_t Disco.setNodeClass(uint16_t classid){
 		ID=classid;
 		return FALSE;
 	}
 
-	command uint8_t Disco.getNodeClass(){
+	command uint16_t Disco.getNodeClass(){
 		return ID;
 	}
 
@@ -130,7 +130,7 @@ implementation{
 				case T_REQUEST:
 					if( *(nx_uint16_t*)msgPayload == ID)
 					{
-						if(signal Disco.fetchPayload(packetBuffer, &Rlen) == SUCCESS)
+						if(signal Disco.fetchPayload(packetBuffer, &Rlen, msgPtr->nodeid) == SUCCESS)
 						{
 							transmitPacket(packetBuffer,Rlen);
 						}

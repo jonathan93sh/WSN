@@ -15,17 +15,8 @@ module WSNExamC{
 }
 implementation{
 
-	event message_t Disco.received(message_t *msg, void *buf, uint8_t len){
-		// TODO Auto-generated method stub
-	}
 
-	event error_t Disco.fetchPayload(void *buf, uint8_t *len){
-		// TODO Auto-generated method stub
-	}
 
-	event message_t * Receive.receive(message_t *msg, void *payload, uint8_t len){
-		// TODO Auto-generated method stub
-	}
 
 	event void AMControl.stopDone(error_t error){
 		// TODO Auto-generated method stub
@@ -45,5 +36,19 @@ implementation{
 
 	event void Boot.booted(){
 		// TODO Auto-generated method stub
+	}
+
+	event error_t Disco.fetchPayload(void *buf, uint8_t *len, uint16_t nodeid){
+		// TODO Auto-generated method stub
+		return FAIL;
+	}
+
+	event message_t Disco.received(message_t *msg, void *buf, uint8_t len, uint16_t nodeid){
+		// TODO Auto-generated method stub
+		return *msg;
+	}
+
+	event message_t * Receive.receive(message_t *msg, void *payload, uint8_t len){
+		return msg;
 	}
 }
