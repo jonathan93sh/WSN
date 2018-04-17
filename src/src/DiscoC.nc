@@ -1,5 +1,4 @@
 #include <Timer.h>
-#include "Disco.nc"
 #include "Disco.h"
 
 module DiscoC{
@@ -166,7 +165,7 @@ implementation{
 
 			uint8_t * DiscoPacket = (uint8_t *)(call Packet.getPayload(&pkt, (uint8_t)sizeof(DiscoMsg)+len));
 			
-			memcpy(pkt+sizeof(DiscoMsg),payload,len);
+			memcpy(DiscoPacket+sizeof(DiscoMsg),payload,len);
 			
 			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_PAYLOAD,len);
 			
