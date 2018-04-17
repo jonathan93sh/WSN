@@ -1,3 +1,6 @@
+#include <Timer.h>
+#include "Disco.h"
+
 configuration DiscoAppC{
 }
 implementation{
@@ -8,7 +11,7 @@ implementation{
 	components new TimerMilliC() as Timer0;
 	components new TimerMilliC() as Timer1;
 	components ActiveMessageC;
-	components new AMSenderC(AM_BLINKTORADIO);
+	components new AMSenderC(AM_RADIO);
 	
 	
 	

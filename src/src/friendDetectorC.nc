@@ -1,4 +1,3 @@
-#include "Disco.nc"
 #include "friendDetector.h"
 module friendDetectorC{
 	uses {

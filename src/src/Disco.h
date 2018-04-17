@@ -51,18 +51,22 @@ uint8_t calcCheckSumMsg(DiscoMsg* this)
 
 error_t getDiscoMsg(void *payload,DiscoMsg **msgPtr,void **msgPayload,uint8_t *len)
 {
+	DiscoMsg * dmHeader;
 	*msgPtr = NULL;
 	*msgPayload = NULL;
+	
 	*len = 0;
-	if(len <= sizeof(DiscoMsg)-1) //must have received a message from another protocol then disco.
+	
+	
+	if(*len <= sizeof(DiscoMsg)-1) //must have received a message from another protocol then disco.
 			return FAIL;
 		
-	DiscoMsg * dmHeader = (DiscoMsg *)payload;
+	dmHeader = (DiscoMsg *)payload;
 	
 	if(dmHeader->checksum != calcCheckSumMsg(dmHeader))
 		return FAIL;
 	
-	if(dmHeader->payload_len != len-sizeof(DiscoMsg))
+	if(dmHeader->payload_len != *len-sizeof(DiscoMsg))
 		return FAIL;
 	
 	if(dmHeader->type == T_REQUEST && dmHeader->payload_len != sizeof(uint16_t))

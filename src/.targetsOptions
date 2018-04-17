@@ -4,7 +4,11 @@
 <default>true</default>
 <project/>
 <target>telosb</target>
-<make-extras/>
+<make-extras>
+<extra name="install">
+<parameter ask="true" name="Mote Id"/>
+</extra>
+</make-extras>
 <includes/>
 <excludes>
 <exclude>.*\.svn.*</exclude>
