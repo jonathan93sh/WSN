@@ -980,8 +980,8 @@ TMicro;
 # 3 "/home/tinyos/WSN/src/src/Disco.h"
 enum __nesc_unnamed4263 {
   AM_RADIO = 6, 
-  TSLOTms = 1000, 
-  T_TIMEOUT_ms = 10
+  TSLOTms = 35, 
+  T_TIMEOUT_ms = 5
 };
 
 enum DiscoMsgTypes {
@@ -21091,8 +21091,8 @@ inline static void DiscoC__Timer0__startPeriodic(uint32_t dt){
 static inline error_t getPrimePairBalanceIDUnique(uint16_t ID, uint8_t DC, uint16_t *p1, uint16_t *p2, uint8_t *realDC)
 {
   *realDC = 100;
-  *p1 = 1;
-  *p2 = 1;
+  *p1 = 11;
+  *p2 = 7;
   return SUCCESS;
 }
 
