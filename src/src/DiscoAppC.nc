@@ -11,6 +11,7 @@ implementation{
 	components new TimerMilliC() as Timer0;
 	components new TimerMilliC() as Timer1;
 	components new TimerMilliC() as Timer2;
+	components CounterMilli32C as Counter0;
 	components ActiveMessageC;
 	components new AMSenderC(AM_RADIO);
 	components new AMReceiverC(AM_RADIO);
@@ -29,5 +30,6 @@ implementation{
 	App.Disco -> DiscoC;
 	App.Leds -> LedsC;
 	App.Timer0 -> Timer2;
+	App.Counter0 -> Counter0;
 	
 }

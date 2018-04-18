@@ -67,7 +67,7 @@ error_t getDiscoMsg(void *payload,DiscoMsg **msgPtr,void **msgPayload,uint8_t le
 		
 	dmHeader = (DiscoMsg *)payload;
 	
-	printf("Disco msg: nodeid %u, counter %u, timeslot %u, prime1 %u, prime2 %u, type %u, payload len %u, checksum %u\r\n", 
+	/*printf("Disco msg: nodeid %u, counter %u, timeslot %u, prime1 %u, prime2 %u, type %u, payload len %u, checksum %u\r\n", 
 		dmHeader->nodeid,
 		dmHeader->counter,
 		dmHeader->timeslot,
@@ -75,7 +75,7 @@ error_t getDiscoMsg(void *payload,DiscoMsg **msgPtr,void **msgPayload,uint8_t le
 		dmHeader->prime2,
 		dmHeader->type,
 		dmHeader->payload_len,
-		dmHeader->checksum);
+		dmHeader->checksum);*/
 
 	if(dmHeader->checksum != calcCheckSumMsg(dmHeader))
 	{
