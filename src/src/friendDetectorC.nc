@@ -4,6 +4,7 @@ module friendDetectorC{
 		interface Boot;
 		interface Disco;	
 		interface Leds;
+		interface Timer<TMilli> as Timer0;
 	}
 }
 implementation{
@@ -29,11 +30,13 @@ implementation{
 		{
 			call Leds.led0On();
 			printf("msg: %s\r\n", (char *)buf);
+			call Timer0.stop();
+			call Timer0.startOneShot(10000);
 		}
 		else
 		{
 			call Leds.led0Off();
-			printf("msg: %s\r\n", (char *)buf);
+			printf("got wrong msg: %s\r\n", (char *)buf);
 		}
 		return *msg;
 	}
@@ -45,7 +48,12 @@ implementation{
 		call Disco.setNodeClass(TOS_NODE_ID);
 		call Disco.setDutyCycle(5);
 		call Leds.led1On();
-		printf("Boot done");
+		printf("Boot done\r\n");
 		//call Leds.set(0xFF);
+	}
+
+	event void Timer0.fired(){
+		printf("No friends left\r\n");
+		call Leds.led0Off();
 	}
 }

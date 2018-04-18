@@ -113,7 +113,7 @@ implementation{
 
 	event message_t * Receive.receive(message_t *msg, void *payload, uint8_t len){
 		DiscoMsg *msgPtr;
-		void *msgPayload;
+		uint8_t *msgPayload;
 		uint8_t payload_len;
 		uint8_t Rlen;
 		printf("Received message\r\n");
@@ -126,18 +126,25 @@ implementation{
 				case T_BEACON:
 					connectNodeID = msgPtr->nodeid;
 					signal Disco.received(msg, 0, 0,msgPtr->nodeid);
-					connectNodeID = -1;
+					//connectNodeID = -1;
 					break;
 				case T_PAYLOAD:
 					signal Disco.received(msg, msgPayload, payload_len,msgPtr->nodeid);
 					break;
 				case T_REQUEST:
-					if( *(nx_uint16_t*)msgPayload == ID)
+					printf("ID:%u Got a request for ID: %u\r\n",ID ,(msgPayload[0]<<8)|msgPayload[1]);
+					if((msgPayload[0]<<8)|msgPayload[1] == ID)
 					{
+						printf("ID ok\r\n");
 						if(signal Disco.fetchPayload(packetBuffer, &Rlen, msgPtr->nodeid) == SUCCESS)
 						{
+							printf("get ready to send payload\r\n");
 							transmitPacket(packetBuffer,Rlen);
 						}
+					}
+					else
+					{
+						printf("wrong ID\r\n");	
 					}
 				break;
 				default:
@@ -173,6 +180,8 @@ implementation{
 
 			DiscoPacket = (uint8_t *)(call Packet.getPayload(&pkt, (uint8_t)sizeof(DiscoMsg)+len));
 			
+			
+			
 			memcpy(DiscoPacket+sizeof(DiscoMsg),payload,len);
 			
 			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_PAYLOAD,len);
@@ -187,10 +196,20 @@ implementation{
 	{
 		if(!busy)
 		{
+			uint8_t *payload;
 			uint8_t * DiscoPacket = (uint8_t *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)+sizeof(nx_uint16_t)));
+			printf("Transmit request connectNodeID: %u\r\n", connectNodeID);
+			payload = ((uint8_t *)DiscoPacket+sizeof(DiscoMsg));
+			payload[0] = connectNodeID>>8;
+			payload[1] = connectNodeID&0xFF;
 			
-			memcpy(DiscoPacket+sizeof(DiscoMsg),&connectNodeID,sizeof(nx_uint16_t));
+			
+			
+			//memcpy(DiscoPacket+sizeof(DiscoMsg),&connectNodeID,sizeof(nx_uint16_t));
+			
+			
 			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_REQUEST,sizeof(nx_uint16_t));//create beacon msg
+			printf("to ID in package: %u\r\n", (payload[0]<<8)|payload[1]);
 			
 			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)+sizeof(nx_uint16_t)) == SUCCESS) {
 				busy = TRUE;

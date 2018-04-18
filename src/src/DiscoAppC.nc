@@ -10,6 +10,7 @@ implementation{
 	components DiscoC;
 	components new TimerMilliC() as Timer0;
 	components new TimerMilliC() as Timer1;
+	components new TimerMilliC() as Timer2;
 	components ActiveMessageC;
 	components new AMSenderC(AM_RADIO);
 	components new AMReceiverC(AM_RADIO);
@@ -27,5 +28,6 @@ implementation{
 	App.Boot -> MainC;
 	App.Disco -> DiscoC;
 	App.Leds -> LedsC;
+	App.Timer0 -> Timer2;
 	
 }
