@@ -6,10 +6,12 @@
 <target>telosb</target>
 <make-extras>
 <extra name="install">
-<parameter ask="true" name="Mote Id"/>
+<parameter ask="true" name="Mote Id">4</parameter>
 </extra>
 </make-extras>
-<includes/>
+<includes>
+<include global="false" include="source" ncc="true" recursive="true">/opt/tinyos-2.1.1/tos/lib/printf</include>
+</includes>
 <excludes>
 <exclude>.*\.svn.*</exclude>
 </excludes>

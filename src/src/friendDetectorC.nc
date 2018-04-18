@@ -14,7 +14,7 @@ implementation{
 		// TODO Auto-generated method stub
 		const char msgString[] = "Friend";
 		strcpy(buf, msgString);
-		*len = (uint8_t)strlen(msgString);
+		*len = (uint8_t)strlen(msgString)+1;
 		return SUCCESS;
 	}
 
@@ -23,15 +23,17 @@ implementation{
 		{
 			call Disco.requestBroadcast();	
 			call Leds.led2Toggle();	
+			printf("msg: beacon\r\n");
 		}
 		else if(strncmp(buf, "Friend", len)==0) //Looking for friend message
 		{
 			call Leds.led0On();
-				
+			printf("msg: %s\r\n", (char *)buf);
 		}
 		else
 		{
 			call Leds.led0Off();
+			printf("msg: %s\r\n", (char *)buf);
 		}
 		return *msg;
 	}
@@ -43,5 +45,7 @@ implementation{
 		call Disco.setNodeClass(TOS_NODE_ID);
 		call Disco.setDutyCycle(5);
 		call Leds.led1On();
+		printf("Boot done");
+		//call Leds.set(0xFF);
 	}
 }

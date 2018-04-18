@@ -38,6 +38,7 @@ implementation{
 		getPrimePairBalanceIDUnique(ID, dutycycle, &prime1, &prime2, &DC);
 		counter=0;
 		call Timer0.startPeriodic(TSLOTms);
+		printf("ID: %u, set dutycycle (wanted/real): (%u/%u), prime1: %u, prime2: %u", ID, dutycycle, DC, prime1,prime2);
 		return DC;
 	}
 
@@ -75,10 +76,12 @@ implementation{
 	
 
 	event void Timer0.fired(){
+		//printf("Timer0 Trig\r\n");
 		if(!busy)
 		{
-			if(counter%prime1 || counter%prime2)
+			if(counter%prime1==0 || counter%prime2==0)
 			{
+				printf("starting\r\n");
 				call Timer1.startOneShot(TSLOTms-T_TIMEOUT_ms);
 				call AMControl.start();
 			}
@@ -91,6 +94,7 @@ implementation{
 	}
 	
 	event void Timer1.fired(){
+		printf("Timer1 Trig\r\n");
 		transmitBeacon();
 	}
 
@@ -112,9 +116,10 @@ implementation{
 		void *msgPayload;
 		uint8_t payload_len;
 		uint8_t Rlen;
+		printf("Received message\r\n");
 		
 		
-		if(getDiscoMsg(payload,&msgPtr,&msgPayload,&payload_len) == SUCCESS)
+		if(getDiscoMsg(payload,&msgPtr,&msgPayload,len,&payload_len) == SUCCESS)
 		{
 			switch(msgPtr->type)
 			{
@@ -147,9 +152,11 @@ implementation{
 	//methodes
 	void transmitBeacon()
 	{
+		DiscoMsg * dmpkt;
 		if(!busy && beaconEn)
 		{
-			DiscoMsg * dmpkt = (DiscoMsg *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)));
+			printf("send Beacon\r\n");
+			dmpkt = (DiscoMsg *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)));
 			createDiscoMsg(dmpkt,ID,counter,TSLOTms,prime1,prime2,T_BEACON,0);//create beacon msg
 			
 			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)) == SUCCESS) {
@@ -170,7 +177,7 @@ implementation{
 			
 			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_PAYLOAD,len);
 			
-			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)) == SUCCESS) {
+			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)+len) == SUCCESS) {
 				busy = TRUE;
 			}
 		}		
@@ -183,9 +190,9 @@ implementation{
 			uint8_t * DiscoPacket = (uint8_t *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)+sizeof(nx_uint16_t)));
 			
 			memcpy(DiscoPacket+sizeof(DiscoMsg),&connectNodeID,sizeof(nx_uint16_t));
-			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_REQUEST,0);//create beacon msg
+			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_REQUEST,sizeof(nx_uint16_t));//create beacon msg
 			
-			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)) == SUCCESS) {
+			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)+sizeof(nx_uint16_t)) == SUCCESS) {
 				busy = TRUE;
 			}
 		}	

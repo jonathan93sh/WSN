@@ -12,6 +12,7 @@ implementation{
 	components new TimerMilliC() as Timer1;
 	components ActiveMessageC;
 	components new AMSenderC(AM_RADIO);
+	components new AMReceiverC(AM_RADIO);
 	
 	
 	
@@ -21,5 +22,10 @@ implementation{
 	DiscoC.AMPacket->AMSenderC;
 	DiscoC.AMSend->AMSenderC;
 	DiscoC.AMControl->ActiveMessageC;
+	DiscoC.Receive -> AMReceiverC;
+	
+	App.Boot -> MainC;
+	App.Disco -> DiscoC;
+	App.Leds -> LedsC;
 	
 }
