@@ -6,7 +6,7 @@
 <target>telosb</target>
 <make-extras>
 <extra name="install">
-<parameter ask="true" name="Mote Id">4</parameter>
+<parameter ask="true" name="Mote Id">1</parameter>
 </extra>
 </make-extras>
 <includes>
@@ -20,7 +20,7 @@
 <boards/>
 <no-std-incl>false</no-std-incl>
 <component/>
-<component-file>/Disco/src/DiscoAppC.nc</component-file>
+<component-file>/src/src/DiscoAppC.nc</component-file>
 <include-last-build>true</include-last-build>
 <include-env-default-paths>true</include-env-default-paths>
 <environment_variables/>

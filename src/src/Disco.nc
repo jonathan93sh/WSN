@@ -15,6 +15,7 @@ interface Disco{
 	
 	// Request, event, callback for app-specific payload
 	command error_t requestBroadcast();
+	command error_t resetCounter();
 	event error_t fetchPayload(void *buf, uint8_t *len, uint16_t nodeid);
 	event message_t received(message_t* msg, void* buf, uint8_t len,uint16_t nodeid);
 }

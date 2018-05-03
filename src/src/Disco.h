@@ -23,6 +23,11 @@ enum DiscoMsgTypes{
  	nx_uint8_t payload_len; //len=0 is just a beacon
  	nx_uint8_t checksum;
  } DiscoMsg;
+ 
+ typedef nx_struct PrimePair{
+ 	nx_uint16_t prime1;
+ 	nx_uint16_t prime2;
+ } PrimePair;
 
 uint8_t calcCheckSumMsg(DiscoMsg* this);
 
@@ -119,11 +124,25 @@ static const uint16_t primes[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59
  
  static const float TH = 0.5f;
  
+ // ca = 0.2,0.5,1,2,3,4,5,10,20,30,40,50,100%
+ static const PrimePair pairs1[] = {{1003,997},{400,401},{203,197},{97,103},{67,66},{49,51},{43,37},{21,19},{9,11},{5,7},{4,5},{4,3},{1,1}};
+ 
+static const PrimePair pairs2[] = {{991,1009},{403,397},{201,199},{99,101},{65,68},{48,53},{31,47},{17,23},{7,13},{3,11},{7,3},{3,5},{1,1}};
+ 
+ //ca 5%
+ static const PrimePair asyncpairs1[] = {{23,151},{24,121}};
+  static const PrimePair asyncpairs2[] = {{21,421},{25,101}};
+ 
  error_t getPrimePairBalanceIDUnique(uint16_t ID, uint8_t DC, uint16_t* p1, uint16_t* p2, uint8_t *realDC)
  {
- 	*realDC=100;
- 	*p1 = 11;
- 	*p2 = 7;
+ 	
+ 	
+ 	//*realDC=100;
+ 	*p1 = 21;
+ 	*p2 = 421;
+ 	
+ 	*realDC = 100/(*p1)+100/(*p2);
+ 	
  	return SUCCESS;
  }
  

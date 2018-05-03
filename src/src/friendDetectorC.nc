@@ -28,6 +28,7 @@ implementation{
 			call Leds.led2Toggle();	
 			printf("msg: beacon, time since last beacon: %lu ms\r\n", nowDisco-lastDisco);
 			lastDisco = nowDisco;
+			call Disco.resetCounter();
 		}
 		else if(strncmp(buf, "Friend", len)==0) //Looking for friend message
 		{

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="tinyos.launch.build">
+<listAttribute key="tinyos.boards"/>
+<booleanAttribute key="tinyos.boards.use-default" value="true"/>
+<booleanAttribute key="tinyos.boards.use-local" value="true"/>
+<stringAttribute key="tinyos.component" value=""/>
+<booleanAttribute key="tinyos.component-file.use-default" value="true"/>
+<booleanAttribute key="tinyos.component-file.use-local" value="false"/>
+<booleanAttribute key="tinyos.component.use-default" value="true"/>
+<booleanAttribute key="tinyos.component.use-local" value="false"/>
+<listAttribute key="tinyos.environment_variables.keys"/>
+<booleanAttribute key="tinyos.environment_variables.use-default" value="true"/>
+<booleanAttribute key="tinyos.environment_variables.use-local" value="true"/>
+<listAttribute key="tinyos.environment_variables.values"/>
+<listAttribute key="tinyos.excludes"/>
+<booleanAttribute key="tinyos.excludes.use-default" value="true"/>
+<booleanAttribute key="tinyos.excludes.use-local" value="true"/>
+<booleanAttribute key="tinyos.include-env-default-paths" value="false"/>
+<booleanAttribute key="tinyos.include-env-default-paths.use-default" value="false"/>
+<booleanAttribute key="tinyos.include-env-default-paths.use-local" value="true"/>
+<booleanAttribute key="tinyos.include-last-build" value="false"/>
+<booleanAttribute key="tinyos.include-last-build.use-default" value="false"/>
+<booleanAttribute key="tinyos.include-last-build.use-local" value="true"/>
+<listAttribute key="tinyos.includes"/>
+<booleanAttribute key="tinyos.includes.use-default" value="true"/>
+<booleanAttribute key="tinyos.includes.use-local" value="true"/>
+<listAttribute key="tinyos.macros.include.ncc"/>
+<listAttribute key="tinyos.macros.include.yeti"/>
+<listAttribute key="tinyos.macros.names"/>
+<booleanAttribute key="tinyos.macros.use-default" value="true"/>
+<booleanAttribute key="tinyos.macros.use-local" value="true"/>
+<listAttribute key="tinyos.macros.values"/>
+<listAttribute key="tinyos.make-extras.names"/>
+<mapAttribute key="tinyos.make-extras.pAsk"/>
+<mapAttribute key="tinyos.make-extras.pNames"/>
+<mapAttribute key="tinyos.make-extras.pValues"/>
+<booleanAttribute key="tinyos.make-extras.use-default" value="true"/>
+<booleanAttribute key="tinyos.make-extras.use-local" value="true"/>
+<booleanAttribute key="tinyos.no-std-incl" value="false"/>
+<booleanAttribute key="tinyos.no-std-incl.use-default" value="false"/>
+<booleanAttribute key="tinyos.no-std-incl.use-local" value="true"/>
+<booleanAttribute key="tinyos.project.use-default" value="false"/>
+<booleanAttribute key="tinyos.project.use-local" value="true"/>
+<booleanAttribute key="tinyos.target.use-default" value="true"/>
+<booleanAttribute key="tinyos.target.use-local" value="false"/>
+<listAttribute key="tinyos.typedefs.names"/>
+<listAttribute key="tinyos.typedefs.types"/>
+<booleanAttribute key="tinyos.typedefs.use-default" value="true"/>
+<booleanAttribute key="tinyos.typedefs.use-local" value="true"/>
+</launchConfiguration>
