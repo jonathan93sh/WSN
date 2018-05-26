@@ -55,6 +55,11 @@ implementation{
 		DC = (float)lutDC[dutycycleIdx] / 10000.0f;
 		return 0;
 	}
+	
+	command void Disco.getPrimePair(uint16_t * p1, uint16_t * p2){
+		*p1 = prime1;
+		*p2 = prime2;
+	}
 
 	command uint16_t Disco.getMaxDutyCycleIndex(){
 		return PRIMEPAIRS_LENGTH;
@@ -70,7 +75,7 @@ implementation{
 	}
 
 	command error_t Disco.setBeaconMode(bool beacon){
-		beaconEn = TRUE;
+		beaconEn = beacon;
 		return SUCCESS;
 	}
 
@@ -138,18 +143,18 @@ implementation{
 			{
 				case T_BEACON:
 					connectNodeID = msgPtr->nodeid;
-					signal Disco.received(msg, 0, 0,msgPtr->nodeid);
+					signal Disco.received(msgPtr, 0, 0);
 					//connectNodeID = -1;
 					break;
 				case T_PAYLOAD:
-					signal Disco.received(msg, msgPayload, payload_len,msgPtr->nodeid);
+					signal Disco.received(msgPtr, msgPayload, payload_len);
 					break;
 				case T_REQUEST:
 					//printf("ID:%u Got a request for ID: %u\r\n",ID ,(msgPayload[0]<<8)|msgPayload[1]);
 					if((msgPayload[0]<<8)|msgPayload[1] == ID)
 					{
 						//printf("ID ok\r\n");
-						if(signal Disco.fetchPayload(packetBuffer, &Rlen, msgPtr->nodeid) == SUCCESS)
+						if(signal Disco.fetchPayload(msgPtr,packetBuffer, &Rlen) == SUCCESS)
 						{
 							//printf("get ready to send payload\r\n");
 							transmitPacket(packetBuffer,Rlen);

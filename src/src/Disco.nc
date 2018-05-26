@@ -1,5 +1,5 @@
 #include <message.h>
-
+#include "Disco.h"
 interface Disco{
 	// Request a duty cycle between 0 and 100 pct
 
@@ -8,6 +8,8 @@ interface Disco{
 	command uint16_t getMaxDutyCycleIndex();
 	command float getDutyCycle();
 	
+	command void getPrimePair(uint16_t * p1, uint16_t * p2);
+
 	// Set the node class to reduce inter-class latency
 	command error_t setNodeClass(uint16_t classid);
 	command uint16_t getNodeClass();
@@ -18,6 +20,6 @@ interface Disco{
 	
 	// Request, event, callback for app-specific payload
 	command error_t requestBroadcast();
-	event error_t fetchPayload(void *buf, uint8_t *len, uint16_t nodeid);
-	event message_t received(message_t* msg, void* buf, uint8_t len,uint16_t nodeid);
+	event error_t fetchPayload(DiscoMsg *msg,void *buf, uint8_t *len);
+	event message_t received(DiscoMsg *msg, void* buf, uint8_t len);
 }

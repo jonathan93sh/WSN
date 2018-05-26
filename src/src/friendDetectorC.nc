@@ -19,7 +19,7 @@ implementation{
 		*len = (uint8_t)strlen(msgString)+1;
 		return SUCCESS;
 	}
-
+	
 	event message_t Disco.received(message_t *msg, void *buf, uint8_t len, uint16_t nodeid){
 		uint32_t nowDisco = call Counter0.get();
 		if(len==0)//beacon message

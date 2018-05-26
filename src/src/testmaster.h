@@ -7,8 +7,7 @@ enum {
 };
 
 typedef nx_struct testMsg_t {
-	nx_uint16_t new_prime1;
-	nx_uint16_t new_prime2;
+	nx_uint16_t next_prim_pair_idx;
 } testMsg;
 
 #endif /* FRIEND_DETECTOR_H */
