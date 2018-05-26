@@ -1,6 +1,6 @@
 #include "testmaster.h"
 #include "Disco.h"
-module testMaster{
+module testSlave{
 	uses {
 		interface Boot;
 		interface Disco;	
