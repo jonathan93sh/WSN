@@ -1,6 +1,6 @@
 #include "testmaster.h"
 #include "Disco.h"
-
+#include<UserButton.h>
 	
 
 module testmasterC{
@@ -9,6 +9,8 @@ module testmasterC{
 		interface Disco;	
 		interface Leds;
 		interface Counter<TMilli, uint32_t> as Counter0;
+		interface Get<button_state_t>;
+		interface Notify<button_state_t>;
 	}
 }
 
@@ -17,13 +19,27 @@ implementation{
 	uint32_t lastDisco = 0;
 	uint32_t counter_reset_value = 100;
 	uint32_t countdown = 0;
+	uint16_t ButtonPressCounter = 0;
 
 	uint32_t test_cur = 0;
 
 	uint16_t MprimeIDX[] = {149,2,3,4,5,6,7,8,9,10};
 	uint16_t SprimeIDX[] = {149,2,3,4,5,6,7,8,9,10};
 
-	event error_t Disco.fetchPayload(DiscoMsg *msg,void *buf, uint8_t *len){
+	event void Notify.notify(button_state_t value)
+	{
+		if(value == BUTTON_PRESSED && ButtonPressCounter == 0)
+		{
+			call Disco.setBeaconMode(TRUE);
+			call Disco.setNodeClass(TOS_NODE_ID);
+			call Disco.setDutyCycleIndex(MprimeIDX[0],rand());
+			lastDisco = call Counter0.get();
+		}
+		ButtonPressCounter++;
+	}
+
+	event error_t Disco.fetchPayload(DiscoMsg *msg,void *buf, uint8_t *len)
+	{
 		uint16_t p1,p2;
 
 		testMsg newMsg;
@@ -74,12 +90,13 @@ implementation{
 	event void Boot.booted(){
 		call Leds.led0Off();
 		call Leds.led2Off();
-		call Disco.setBeaconMode(TRUE);
-		call Disco.setNodeClass(TOS_NODE_ID);
-		call Disco.setDutyCycleIndex(MprimeIDX[0],rand());
+
 		call Leds.led1On();
+		call Notify.enable();
+		
+
 		printf("Boot done\r\n");
-		lastDisco = call Counter0.get();
+		
 	}
 
 	async event void Counter0.overflow(){

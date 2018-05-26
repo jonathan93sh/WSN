@@ -15,6 +15,7 @@ implementation{
 	components ActiveMessageC;
 	components new AMSenderC(AM_RADIO);
 	components new AMReceiverC(AM_RADIO);
+	components UserButtonC;
 	
 	
 	
@@ -30,5 +31,8 @@ implementation{
 	App.Disco -> DiscoC;
 	App.Leds -> LedsC;
 	App.Counter0 -> Counter0;
+
+	App.Get -> UserButtonC;
+	App.Notify -> UserButtonC;
 	
 }
