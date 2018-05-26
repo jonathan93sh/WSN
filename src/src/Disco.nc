@@ -2,8 +2,11 @@
 
 interface Disco{
 	// Request a duty cycle between 0 and 100 pct
-	command uint8_t setDutyCycle(uint8_t dutycycle);
-	command uint8_t getDutyCycle();
+
+	command float setDutyCycle(float dutycycle, uint32_t shift);
+	command float setDutyCycleIndex(uint16_t dutycycleIdx, uint32_t shift);
+	command uint16_t getMaxDutyCycleIndex();
+	command float getDutyCycle();
 	
 	// Set the node class to reduce inter-class latency
 	command error_t setNodeClass(uint16_t classid);

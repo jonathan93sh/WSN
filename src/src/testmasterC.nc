@@ -9,8 +9,10 @@ module friendDetectorC{
 	}
 }
 implementation{
-	uint32_t lastDisco = 0;	
-
+	uint32_t lastDisco = 0;
+	uint32_t counter_reset_value = 100;
+	uint32_t countdown = 0;
+	
 
 	event error_t Disco.fetchPayload(void *buf, uint8_t *len,uint16_t nodeid){
 		// TODO Auto-generated method stub

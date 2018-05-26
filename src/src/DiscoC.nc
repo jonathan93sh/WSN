@@ -20,8 +20,8 @@ module DiscoC{
 implementation{
 	message_t pkt;//default packet header.
 	uint16_t prime1,prime2;
-	uint16_t counter = 0;
-	uint8_t DC = 0;
+	uint32_t counter = 0;
+	float DC = 0;
 	uint16_t ID = 0;
 	bool beaconEn = FALSE;
 	bool busy = FALSE;
@@ -34,18 +34,32 @@ implementation{
 	void transmitRequst();
 	
 // Disco - interface - start -------------------------------
-	command uint8_t Disco.setDutyCycle(uint8_t dutycycle){
-		getPrimePairBalanceIDUnique(ID, dutycycle, &prime1, &prime2, &DC);
-		counter=0;
+	command float Disco.setDutyCycle(float dutycycle, uint32_t shift){
+		getPrimePair(dutycycle, &prime1, &prime2, &DC);
+		//getPrimePairBalanceIDUnique(ID, dutycycle, &prime1, &prime2, &DC);
+		counter=shift;
 		call Timer0.startPeriodic(TSLOTms);
-		printf("ID: %u, set dutycycle (wanted/real): (%u/%u), prime1: %u, prime2: %u", ID, dutycycle, DC, prime1,prime2);
+		printf("ID: %u, set dutycycle (wanted/real) 1/1000: (%u/%u), prime1: %u, prime2: %u", ID, (uint16_t)(dutycycle*1000), (uint16_t)(DC*1000), prime1,prime2);
 		return DC;
 	}
 
-	command uint8_t Disco.getDutyCycle(){
+	command float Disco.getDutyCycle(){
 		return DC;
 	}
+	
+	command float Disco.setDutyCycleIndex(uint16_t dutycycleIdx, uint32_t shift){
+		if(dutycycleIdx >= PRIMEPAIRS_LENGTH)
+			return 0;
+		prime1 = lutPrime1[dutycycleIdx];
+		prime2 = lutPrime2[dutycycleIdx];
+		DC = (float)lutDC[dutycycleIdx] / 10000.0f;
+		return 0;
+	}
 
+	command uint16_t Disco.getMaxDutyCycleIndex(){
+		return PRIMEPAIRS_LENGTH;
+	}
+	
 	command error_t Disco.setNodeClass(uint16_t classid){
 		ID=classid;
 		return FALSE;
@@ -219,6 +233,8 @@ implementation{
 	
 	
 	
+
+
 
 
 }

@@ -1,5 +1,6 @@
 #ifndef DISCO_H
 #define DISCO_H
+#include "discoprimepairlut.h"
 enum{
 	AM_RADIO = 6,
 	TSLOTms = 35,
@@ -27,6 +28,27 @@ enum DiscoMsgTypes{
 uint8_t calcCheckSumMsg(DiscoMsg* this);
 
 
+
+error_t getPrimePair(float DC, uint16_t *prime1, uint16_t *prime2, float *realDC)
+{
+	uint16_t DCint = (int)(DC*10000);
+	int i;
+	for(i = 0; i < PRIMEPAIRS_LENGTH; i++)
+	{
+		if(DCint <= lutDC[i])
+		{
+			*prime1 = lutPrime1[i];
+			*prime2 = lutPrime2[i];
+			*realDC = (float)lutDC[i] / 10000.0f;
+			return SUCCESS;
+		}
+	}
+	
+	*prime1 = lutPrime1[0];
+	*prime2 = lutPrime2[0];
+	*realDC = (float)lutDC[0] / 10000.0f;
+	return FAIL;
+}
 
 void createDiscoMsg(DiscoMsg* this,uint16_t nodeid,uint16_t counter, uint16_t timeslot, uint16_t prime1, uint16_t prime2, uint8_t type, uint8_t payload_len)
 {
