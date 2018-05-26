@@ -53,6 +53,8 @@ implementation{
 		prime1 = lutPrime1[dutycycleIdx];
 		prime2 = lutPrime2[dutycycleIdx];
 		DC = (float)lutDC[dutycycleIdx] / 10000.0f;
+		counter=shift;
+		call Timer0.startPeriodic(TSLOTms);
 		return 0;
 	}
 	
@@ -134,7 +136,7 @@ implementation{
 		uint8_t *msgPayload;
 		uint8_t payload_len;
 		uint8_t Rlen;
-		//printf("Received message\r\n");
+		printf("Received message\r\n");
 		
 		
 		if(getDiscoMsg(payload,&msgPtr,&msgPayload,len,&payload_len) == SUCCESS)
@@ -180,7 +182,7 @@ implementation{
 		DiscoMsg * dmpkt;
 		if(!busy && beaconEn)
 		{
-			//printf("send Beacon\r\n");
+			printf("send Beacon\r\n");
 			dmpkt = (DiscoMsg *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)));
 			createDiscoMsg(dmpkt,ID,counter,TSLOTms,prime1,prime2,T_BEACON,0);//create beacon msg
 			
