@@ -29,7 +29,7 @@ implementation{
 		testMsg newMsg;
 		uint32_t nowDisco = call Counter0.get();
 		call Disco.getPrimePair(&p1,&p2);
-		printf("%u,%u,%u,%u,%lu\r\n", p1,p2,msg->prime1,msg->prime2,nowDisco-lastDisco);
+		printf("%lu,%u,%u,%u,%u,%u,%lu,%lu,%lu\r\n",countdown,test_cur,p1,p2,msg->prime1,msg->prime2,nowDisco,lastDisco,nowDisco-lastDisco);
 		lastDisco = nowDisco;
 		
 
