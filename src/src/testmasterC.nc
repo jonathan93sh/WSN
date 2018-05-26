@@ -1,11 +1,10 @@
 #include "testmaster.h"
 #include "Disco.h"
-module testMaster{
+module testmasterC{
 	uses {
 		interface Boot;
 		interface Disco;	
 		interface Leds;
-		interface Timer<TMilli> as Timer0;
 		interface Counter<TMilli, uint32_t> as Counter0;
 	}
 }
@@ -21,8 +20,9 @@ implementation{
 
 	event error_t Disco.fetchPayload(DiscoMsg *msg,void *buf, uint8_t *len){
 		uint16_t p1,p2;
+		testMsg newMsg;
 		uint32_t nowDisco = call Counter0.get();
-		call Disco.getPrimes(&p1,&p2);
+		call Disco.getPrimePair(&p1,&p2);
 		printf("%u,%u,%u,%u,%u\r\n", p1,p2,msg->prime1,msg->prime2,nowDisco-lastDisco);
 		lastDisco = nowDisco;
 		
@@ -38,9 +38,9 @@ implementation{
 
 		call Disco.setDutyCycleIndex(MprimeIDX[test_cur],rand());
 		
-		testMsg.next_prim_pair_idx = SprimeIDX[test_cur];
-		memcpy(buf, testMsg,sizeof(testMsg_t));
-		*len = sizeof(testMsg_t);
+		newMsg.next_prim_pair_idx = SprimeIDX[test_cur];
+		memcpy(buf, &newMsg,sizeof(testMsg));
+		*len = sizeof(testMsg);
 
 		return SUCCESS;
 	}

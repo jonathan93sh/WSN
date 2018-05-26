@@ -1,6 +1,6 @@
 #include "testmaster.h"
 #include "Disco.h"
-module testSlave{
+module testslaveC{
 	uses {
 		interface Boot;
 		interface Disco;	
@@ -8,20 +8,25 @@ module testSlave{
 	}
 }
 implementation{
-
+	
+	
+	
 	event error_t Disco.fetchPayload(DiscoMsg *msg,void *buf, uint8_t *len){
 		return FAIL;
 	}
 
 	event void Disco.received(DiscoMsg *msg, void *buf, uint8_t len){
+		testMsg newMsg;
+		
 		if(len==0)
 		{
-			Disco.requestBroadcast();
+			call Disco.requestBroadcast();
 		}
-		else(len==sizeof(testMsg_t))
+		else if(len==sizeof(testMsg))
 		{
-			memcpy(testMsg,buf,len);
-			call Disco.setDutyCycleIndex(testMsg->next_prim_pair_idx,rand());
+			memcpy(&newMsg,buf,(size_t)len);
+			
+			call Disco.setDutyCycleIndex(newMsg.next_prim_pair_idx,rand());
 		}
 	}
 
