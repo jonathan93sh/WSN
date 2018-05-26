@@ -45,8 +45,8 @@ implementation{
 		return SUCCESS;
 	}
 
-	event message_t Disco.received(DiscoMsg *msg, void *buf, uint8_t len){
-		return *msg;
+	event void Disco.received(DiscoMsg *msg, void *buf, uint8_t len){
+		
 	}
 
 	event void Boot.booted(){

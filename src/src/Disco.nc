@@ -21,5 +21,5 @@ interface Disco{
 	// Request, event, callback for app-specific payload
 	command error_t requestBroadcast();
 	event error_t fetchPayload(DiscoMsg *msg,void *buf, uint8_t *len);
-	event message_t received(DiscoMsg *msg, void* buf, uint8_t len);
+	event void received(DiscoMsg *msg, void* buf, uint8_t len);
 }
