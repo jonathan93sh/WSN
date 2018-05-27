@@ -3,9 +3,9 @@
 #include "discoprimepairlut.h"
 enum{
 	AM_RADIO = 0x22,
-	TSLOTms = 40,
-	T_TIMEOUT_ms = 10,
-	RETRYS = 3
+	TSLOTms = 20,
+	T_TIMEOUT_ms = 3,
+	RETRYS = 6
 };
 
 enum DiscoMsgTypes{
@@ -84,7 +84,7 @@ error_t getDiscoMsg(void *payload,DiscoMsg **msgPtr,void **msgPayload,uint8_t le
 	
 	if(len <= sizeof(DiscoMsg)-1) //must have received a message from another protocol then disco.
 	{
-		printf("wrong format to small: (%u/%u)\r\n",len,sizeof(DiscoMsg)-1);	
+		//printf("wrong format to small: (%u/%u)\r\n",len,sizeof(DiscoMsg)-1);	
 		return FAIL;
 	}
 			
@@ -103,21 +103,21 @@ error_t getDiscoMsg(void *payload,DiscoMsg **msgPtr,void **msgPayload,uint8_t le
 
 	if(dmHeader->checksum != calcCheckSumMsg(dmHeader))
 	{
-		printf("CRC fail (calc/msg):(%u/%u)\r\n",calcCheckSumMsg(dmHeader),dmHeader->checksum);
+		//printf("CRC fail (calc/msg):(%u/%u)\r\n",calcCheckSumMsg(dmHeader),dmHeader->checksum);
 		return FAIL;
 	}
 		
 	
 	if(dmHeader->payload_len != len-sizeof(DiscoMsg))
 	{
-		printf("Payload len wrong size: (%u/%u)\r\n",len-sizeof(DiscoMsg),dmHeader->payload_len);
+		//printf("Payload len wrong size: (%u/%u)\r\n",len-sizeof(DiscoMsg),dmHeader->payload_len);
 		return FAIL;
 	}
 		
 	
 	if(dmHeader->type == T_REQUEST && dmHeader->payload_len != sizeof(uint16_t))
 	{
-		printf("Payload len wrong size: (%u/%u), then request type max: %u\r\n",len-sizeof(DiscoMsg),dmHeader->payload_len, sizeof(uint16_t));
+		//printf("Payload len wrong size: (%u/%u), then request type max: %u\r\n",len-sizeof(DiscoMsg),dmHeader->payload_len, sizeof(uint16_t));
 		return FAIL;
 	}
 		
