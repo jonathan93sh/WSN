@@ -11,6 +11,7 @@ implementation{
 	components new TimerMilliC() as Timer0;
 	components new TimerMilliC() as Timer1;
 	components new TimerMilliC() as Timer2;
+	
 	components CounterMilli32C as Counter0;
 	components ActiveMessageC;
 	components new AMSenderC(AM_RADIO);
@@ -18,6 +19,7 @@ implementation{
 
 	DiscoC.Timer0 -> Timer0;
 	DiscoC.Timer1 -> Timer1;
+	DiscoC.Timer2_retransmit -> Timer2;
 	DiscoC.Packet->AMSenderC;
 	DiscoC.AMPacket->AMSenderC;
 	DiscoC.AMSend->AMSenderC;

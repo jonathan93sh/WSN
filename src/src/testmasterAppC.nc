@@ -12,15 +12,18 @@ implementation{
 	components new TimerMilliC() as Timer0;
 	components new TimerMilliC() as Timer1;
 	components new TimerMilliC() as Timer2;
+	components new TimerMilliC() as Timer3;
 	components CounterMilli32C as Counter0;
 	components ActiveMessageC;
 	components new AMSenderC(AM_RADIO);
 	components new AMReceiverC(AM_RADIO);
 	components UserButtonC;
+
 	
 	
 	DiscoC.Timer0 -> Timer0;
 	DiscoC.Timer1 -> Timer1;
+	DiscoC.Timer2_retransmit -> Timer3;
 	DiscoC.Packet->AMSenderC;
 	DiscoC.AMPacket->AMSenderC;
 	DiscoC.AMSend->AMSenderC;
@@ -31,7 +34,14 @@ implementation{
 	App.Disco -> DiscoC;
 	App.Leds -> LedsC;
 	App.Counter0 -> Counter0;
+
 	App.Get -> UserButtonC.Get;
 	App.Notify -> UserButtonC.Notify;
 	App.Timer0 -> Timer2;
+
+
+	//App.Get -> UserButtonC;
+	//App.Notify -> UserButtonC;
+	
+
 }

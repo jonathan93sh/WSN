@@ -9,6 +9,7 @@ module DiscoC{
 	uses {
 		interface Timer<TMilli> as Timer0;
 		interface Timer<TMilli> as Timer1;
+		interface Timer<TMilli> as Timer2_retransmit;
 		// AM stuf
 		interface Packet;
 		interface AMPacket;
@@ -23,15 +24,21 @@ implementation{
 	uint32_t counter = 0;
 	float DC = 0;
 	uint16_t ID = 0;
+	uint16_t timeout = 0;
 	bool beaconEn = FALSE;
 	bool busy = FALSE;
 	uint16_t connectNodeID = -1; 
 	nx_uint8_t packetBuffer[100];
+	size_t PacketSize = 0;
+	uint8_t retry_counter = 0;
 	//TOS_NODE_ID
 	//prototypes
+	void transmit_done();
+	void transmit();
 	void transmitPacket(void *payload, uint8_t len);	
 	void transmitBeacon();
 	void transmitRequst();
+	void transmitACK();
 	
 // Disco - interface - start -------------------------------
 	command float Disco.setDutyCycle(float dutycycle, uint32_t shift){
@@ -94,7 +101,7 @@ implementation{
 		return SUCCESS;
 	}
 	// Disco - interface - end -------------------------------
-	
+	bool eop = FALSE;	
 
 	event void Timer0.fired(){
 		//printf("Timer0 Trig\r\n");
@@ -102,21 +109,32 @@ implementation{
 		{
 			if(counter%prime1==0 || counter%prime2==0)
 			{
-				//call Timer1.stop();
+				timeout = 0;
+				call Timer1.stop();
 				//call Timer1.startOneShot(TSLOTms);//-T_TIMEOUT_ms
 				call AMControl.start();
+				eop = FALSE;
 			}
 			else if((counter-1)%prime1==0 || (counter-1)%prime2==0)
 			{
-				transmitBeacon();
-				call Timer1.startOneShot(T_TIMEOUT_ms);
+				if(beaconEn)
+				{
+					transmitBeacon();
+				}
+				else if(retry_counter == 0)
+				{
+					call AMControl.stop();
+				}
+				//
+				eop = TRUE;
 			}
 		}
 		counter++;
 	}
 	
+
+	
 	event void Timer1.fired(){
-		//printf("Timer1 Trig\r\n");
 		call AMControl.stop();
 	}
 
@@ -138,29 +156,43 @@ implementation{
 		uint8_t *msgPayload;
 		uint8_t payload_len;
 		uint8_t Rlen;
-		//printf("Received message\r\n");
+		printf("Received message\r\n");
 		
 		
 		if(getDiscoMsg(payload,&msgPtr,&msgPayload,len,&payload_len) == SUCCESS)
 		{
+			
+
 			switch(msgPtr->type)
 			{
+				case T_ACK:
+					printf("ACK\r\n");
+					transmit_done();
+					break;
 				case T_BEACON:
+					transmit_done();
 					connectNodeID = msgPtr->nodeid;
 					signal Disco.received(msgPtr, 0, 0);
 					//connectNodeID = -1;
 					break;
 				case T_PAYLOAD:
+					transmit_done();
+					transmitACK();
 					signal Disco.received(msgPtr, msgPayload, payload_len);
 					break;
 				case T_REQUEST:
-					//printf("ID:%u Got a request for ID: %u\r\n",ID ,(msgPayload[0]<<8)|msgPayload[1]);
-					if((msgPayload[0]<<8)|msgPayload[1] == ID)
+					printf("ID:%u Got a request for ID: %u\r\n",ID ,(msgPayload[0]<<8)|msgPayload[1]);
+					if(retry_counter != 0)
 					{
-						//printf("ID ok\r\n");
+						printf("allready trying to send payload\r\n");
+					}
+					else if((msgPayload[0]<<8)|msgPayload[1] == ID)
+					{
+						transmit_done();
+						printf("ID ok\r\n");
 						if(signal Disco.fetchPayload(msgPtr,packetBuffer, &Rlen) == SUCCESS)
 						{
-							//printf("get ready to send payload\r\n");
+							printf("get ready to send payload\r\n");
 							transmitPacket(packetBuffer,Rlen);
 						}
 					}
@@ -178,6 +210,48 @@ implementation{
 		
 		return &pkt;
 	}
+	
+
+	
+	event void Timer2_retransmit.fired(){
+		printf("retransmit timeout\r\n");
+		transmit();
+	}
+	
+	void transmit_done()
+	{
+		call Timer2_retransmit.stop();
+		PacketSize = 0;
+		retry_counter = 0;
+		if(eop)
+		{
+			call Timer1.startOneShot(T_TIMEOUT_ms);
+		}
+	}
+	
+	void transmit()
+	{
+		//printf("transmit message\r\n");
+		call Timer1.stop();
+		if(!busy)
+		{
+			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, PacketSize) == SUCCESS) {
+				busy = TRUE;
+			}
+			
+			
+		}
+		if(retry_counter != 0)
+		{
+			call Timer2_retransmit.startOneShot(T_TIMEOUT_ms);
+			retry_counter--;
+		}
+		else if(eop)
+		{
+			call Timer1.startOneShot(T_TIMEOUT_ms);
+		}
+	}
+	
 	//methodes
 	void transmitBeacon()
 	{
@@ -188,11 +262,13 @@ implementation{
 			dmpkt = (DiscoMsg *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)));
 			createDiscoMsg(dmpkt,ID,counter,TSLOTms,prime1,prime2,T_BEACON,0);//create beacon msg
 			
-			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)) == SUCCESS) {
-				busy = TRUE;
-			}
+			PacketSize = sizeof(DiscoMsg);
+			retry_counter = 0;
+			transmit();
 		}
 	}
+	
+	
 	
 	void transmitPacket(void *payload, uint8_t len)
 	{
@@ -208,9 +284,9 @@ implementation{
 			
 			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_PAYLOAD,len);
 			
-			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)+len) == SUCCESS) {
-				busy = TRUE;
-			}
+			PacketSize = sizeof(DiscoMsg)+len;
+			retry_counter = RETRYS;
+			transmit();
 		}		
 	}
 	
@@ -224,24 +300,36 @@ implementation{
 			payload = ((uint8_t *)DiscoPacket+sizeof(DiscoMsg));
 			payload[0] = connectNodeID>>8;
 			payload[1] = connectNodeID&0xFF;
-			
-			
-			
-			//memcpy(DiscoPacket+sizeof(DiscoMsg),&connectNodeID,sizeof(nx_uint16_t));
-			
-			
+
 			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_REQUEST,sizeof(nx_uint16_t));//create beacon msg
 			//printf("to ID in package: %u\r\n", (payload[0]<<8)|payload[1]);
+			PacketSize = sizeof(DiscoMsg)+sizeof(nx_uint16_t);
+			retry_counter = RETRYS;
+			transmit();
+		}	
+	}
+	
+	void transmitACK()
+	{
+		if(!busy)
+		{
+
+			uint8_t * DiscoPacket = (uint8_t *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)));
+			//printf("Transmit request connectNodeID: %u\r\n", connectNodeID);
+
+
+			createDiscoMsg((DiscoMsg*)DiscoPacket,ID,counter,TSLOTms,prime1,prime2,T_ACK,0);//create beacon msg
+			//printf("to ID in package: %u\r\n", (payload[0]<<8)|payload[1]);
 			
-			if(call AMSend.send(AM_BROADCAST_ADDR, &pkt, sizeof(DiscoMsg)+sizeof(nx_uint16_t)) == SUCCESS) {
-				busy = TRUE;
-			}
+			PacketSize = sizeof(DiscoMsg);
+			retry_counter = 0;
+			transmit();
 		}	
 	}
 	
 	
-	
-	
+
+
 
 
 

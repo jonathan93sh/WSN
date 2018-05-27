@@ -3,14 +3,16 @@
 #include "discoprimepairlut.h"
 enum{
 	AM_RADIO = 0x22,
-	TSLOTms = 10,
-	T_TIMEOUT_ms = 8
+	TSLOTms = 40,
+	T_TIMEOUT_ms = 10,
+	RETRYS = 3
 };
 
 enum DiscoMsgTypes{
 	T_BEACON = 0,
 	T_REQUEST = 1,
-	T_PAYLOAD = 2
+	T_PAYLOAD = 2,
+	T_ACK = 3
 };
 
  // [DiscoMsg| Payload ]
