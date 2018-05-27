@@ -52,10 +52,14 @@ implementation{
 		testMsg newMsg;
 		uint32_t nowDisco = call Counter0.get();
 		call Disco.getPrimePair(&p1,&p2);
+//<<<<<<< HEAD
 
 		printf("%lu,%u,",countdown,test_cur);
 		printf("%u,%u,",p1,p2);
 		printf("%u,%u,",msg->prime1,msg->prime2);
+//=======
+//		printf("%lu,%lu,%u,%u,%u,%u,",countdown,test_cur,p1,p2,msg->prime1,msg->prime2);
+//>>>>>>> cd3b52c16f8463ac3317646eab1fb71a53ec856a
 		printf("%lu\r\n",nowDisco-lastDisco);
 
 		lastDisco = nowDisco;
