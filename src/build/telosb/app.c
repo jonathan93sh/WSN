@@ -6955,15 +6955,15 @@ uint16_t testmasterC__SprimeIDX[10] = { 149, 148, 100, 146, 100, 50, 125, 125, 2
 static void testmasterC__Notify__notify(button_state_t value);
 #line 48
 static inline error_t testmasterC__Disco__fetchPayload(DiscoMsg *msg, void *buf, uint8_t *len);
-#line 101
+#line 99
 static inline void testmasterC__Disco__received(DiscoMsg *msg, void *buf, uint8_t len);
 
 
 
 static inline void testmasterC__Boot__booted(void );
-#line 126
+#line 124
 static inline void testmasterC__Counter0__overflow(void );
-#line 149
+#line 147
 static inline void testmasterC__Timer0__fired(void );
 # 53 "/opt/tinyos-2.1.1/tos/lib/timer/Timer.nc"
 static void DiscoC__Timer0__startPeriodic(uint32_t dt);
@@ -10542,9 +10542,9 @@ static inline void /*Msp430Uart1P.UartP*/Msp430UartP__0__Counter__overflow(void 
 {
 }
 
-# 126 "/home/tinyos/WSN/src/src/testmasterC.nc"
+# 124 "/home/tinyos/WSN/src/src/testmasterC.nc"
 static inline void testmasterC__Counter0__overflow(void )
-#line 126
+#line 124
 {
 }
 
@@ -16203,11 +16203,9 @@ static inline error_t testmasterC__Disco__fetchPayload(DiscoMsg *msg, void *buf,
   testmasterC__Disco__getPrimePair(&p1, &p2);
 
 
-  printf("%lu,%u,", testmasterC__countdown, testmasterC__test_cur);
+  printf("%lu,%lu,", testmasterC__countdown, testmasterC__test_cur);
   printf("%u,%u,", p1, p2);
   printf("%u,%u,", __nesc_ntoh_uint16(msg->prime1.data), __nesc_ntoh_uint16(msg->prime2.data));
-
-
 
   printf("%lu\r\n", nowDisco - testmasterC__lastDisco);
 
@@ -16262,9 +16260,9 @@ inline static error_t DiscoC__Disco__fetchPayload(DiscoMsg *msg, void *buf, uint
 #line 23
 }
 #line 23
-# 101 "/home/tinyos/WSN/src/src/testmasterC.nc"
+# 99 "/home/tinyos/WSN/src/src/testmasterC.nc"
 static inline void testmasterC__Disco__received(DiscoMsg *msg, void *buf, uint8_t len)
-#line 101
+#line 99
 {
 }
 
@@ -19670,9 +19668,9 @@ inline static void testmasterC__Leds__led0Off(void ){
 #line 50
 }
 #line 50
-# 149 "/home/tinyos/WSN/src/src/testmasterC.nc"
+# 147 "/home/tinyos/WSN/src/src/testmasterC.nc"
 static inline void testmasterC__Timer0__fired(void )
-#line 149
+#line 147
 {
   testmasterC__Leds__led0Off();
   testmasterC__Leds__led2Off();
@@ -21766,9 +21764,9 @@ inline static void testmasterC__Leds__led1Off(void ){
 #line 66
 }
 #line 66
-# 105 "/home/tinyos/WSN/src/src/testmasterC.nc"
+# 103 "/home/tinyos/WSN/src/src/testmasterC.nc"
 static inline void testmasterC__Boot__booted(void )
-#line 105
+#line 103
 {
   testmasterC__Leds__led0Off();
   testmasterC__Leds__led2Off();

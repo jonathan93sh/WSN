@@ -12,7 +12,7 @@ implementation{
 	components new TimerMilliC() as Timer1;
 	components new TimerMilliC() as Timer2;
 	
-	components CounterMilli32C as Counter0;
+	//components CounterMilli32C as Counter0;
 	components ActiveMessageC;
 	components new AMSenderC(AM_RADIO);
 	components new AMReceiverC(AM_RADIO);
