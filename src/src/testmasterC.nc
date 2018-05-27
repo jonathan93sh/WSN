@@ -22,16 +22,16 @@ module testmasterC{
 }
 
 implementation{
-	uint32_t testN = 10;
+	uint32_t testN = 25;
 	uint32_t lastDisco = 0;
-	uint32_t counter_reset_value = 30;
+	uint32_t counter_reset_value = 100;
 	uint32_t countdown = 0;
 	uint16_t ButtonPressCounter = 0;
 
 	uint32_t test_cur = 0;
 
-	uint16_t MprimeIDX[] = {149,100,100,50,50,50,125,100,25,25};
-	uint16_t SprimeIDX[] = {149,148,100,146,100,50,125,125,25,149};
+	uint16_t MprimeIDX[] = {67,67,67,67,67,50,50,50,50,50,30,30,30,30,30,20,20,20,20,20,10,10,10,10,10};
+	uint16_t SprimeIDX[] = {67,50,30,20,10,67,50,30,20,10,67,50,30,20,10,67,50,30,20,10,67,50,30,20,10};
 
 	event void Notify.notify(button_state_t value)
 	{

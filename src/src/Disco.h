@@ -1,6 +1,6 @@
 #ifndef DISCO_H
 #define DISCO_H
-#include "discoprimepairlut.h"
+#include "discoprimepairlut_fast.h"
 enum{
 	AM_RADIO = 0x22,
 	TSLOTms = 20,
