@@ -156,7 +156,7 @@ implementation{
 		uint8_t *msgPayload;
 		uint8_t payload_len;
 		uint8_t Rlen;
-		printf("Received message\r\n");
+		//printf("Received message\r\n");
 		
 		
 		if(getDiscoMsg(payload,&msgPtr,&msgPayload,len,&payload_len) == SUCCESS)
@@ -166,7 +166,7 @@ implementation{
 			switch(msgPtr->type)
 			{
 				case T_ACK:
-					printf("ACK\r\n");
+					//printf("ACK\r\n");
 					transmit_done();
 					break;
 				case T_BEACON:
@@ -181,18 +181,18 @@ implementation{
 					signal Disco.received(msgPtr, msgPayload, payload_len);
 					break;
 				case T_REQUEST:
-					printf("ID:%u Got a request for ID: %u\r\n",ID ,(msgPayload[0]<<8)|msgPayload[1]);
+					//printf("ID:%u Got a request for ID: %u\r\n",ID ,(msgPayload[0]<<8)|msgPayload[1]);
 					if(retry_counter != 0)
 					{
-						printf("allready trying to send payload\r\n");
+						//printf("allready trying to send payload\r\n");
 					}
 					else if((msgPayload[0]<<8)|msgPayload[1] == ID)
 					{
 						transmit_done();
-						printf("ID ok\r\n");
+						//printf("ID ok\r\n");
 						if(signal Disco.fetchPayload(msgPtr,packetBuffer, &Rlen) == SUCCESS)
 						{
-							printf("get ready to send payload\r\n");
+							//printf("get ready to send payload\r\n");
 							transmitPacket(packetBuffer,Rlen);
 						}
 					}
@@ -214,7 +214,7 @@ implementation{
 
 	
 	event void Timer2_retransmit.fired(){
-		printf("retransmit timeout\r\n");
+		//printf("retransmit timeout\r\n");
 		transmit();
 	}
 	
