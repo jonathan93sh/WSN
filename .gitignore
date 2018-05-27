@@ -1,1 +1,7 @@
 src/.cache/*/*
+src/.targetsOptions
+src/build/telosb/ident_flags.txt
+src/build/telosb/main.exe
+src/build/telosb/main.ihex
+src/build/telosb/tos_image.xml
+

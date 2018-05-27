@@ -37,6 +37,7 @@ implementation{
 		call Leds.led2Off();
 		call Disco.setBeaconMode(FALSE);
 		call Disco.setNodeClass(TOS_NODE_ID);
+		srand(TOS_NODE_ID);
 		call Disco.setDutyCycleIndex((call Disco.getMaxDutyCycleIndex())-1,rand());
 		call Leds.led1On();
 		printf("Boot done\r\n");

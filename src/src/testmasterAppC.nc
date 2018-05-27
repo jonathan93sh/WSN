@@ -1,4 +1,5 @@
 #include <Timer.h>
+#include <UserButton.h>
 #include "Disco.h"
 
 configuration testmasterAppC{
@@ -15,7 +16,7 @@ implementation{
 	components ActiveMessageC;
 	components new AMSenderC(AM_RADIO);
 	components new AMReceiverC(AM_RADIO);
-	
+	components UserButtonC;
 	
 	
 	DiscoC.Timer0 -> Timer0;
@@ -30,5 +31,7 @@ implementation{
 	App.Disco -> DiscoC;
 	App.Leds -> LedsC;
 	App.Counter0 -> Counter0;
-	
+	App.Get -> UserButtonC.Get;
+	App.Notify -> UserButtonC.Notify;
+	App.Timer0 -> Timer2;
 }

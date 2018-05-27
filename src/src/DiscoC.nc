@@ -102,12 +102,14 @@ implementation{
 		{
 			if(counter%prime1==0 || counter%prime2==0)
 			{
-				call Timer1.startOneShot(TSLOTms-T_TIMEOUT_ms);
+				//call Timer1.stop();
+				//call Timer1.startOneShot(TSLOTms);//-T_TIMEOUT_ms
 				call AMControl.start();
 			}
-			else
+			else if((counter-1)%prime1==0 || (counter-1)%prime2==0)
 			{
-				call AMControl.stop();
+				transmitBeacon();
+				call Timer1.startOneShot(T_TIMEOUT_ms);
 			}
 		}
 		counter++;
@@ -115,7 +117,7 @@ implementation{
 	
 	event void Timer1.fired(){
 		//printf("Timer1 Trig\r\n");
-		transmitBeacon();
+		call AMControl.stop();
 	}
 
 	event void AMSend.sendDone(message_t *msg, error_t error){
@@ -136,7 +138,7 @@ implementation{
 		uint8_t *msgPayload;
 		uint8_t payload_len;
 		uint8_t Rlen;
-		printf("Received message\r\n");
+		//printf("Received message\r\n");
 		
 		
 		if(getDiscoMsg(payload,&msgPtr,&msgPayload,len,&payload_len) == SUCCESS)
@@ -182,7 +184,7 @@ implementation{
 		DiscoMsg * dmpkt;
 		if(!busy && beaconEn)
 		{
-			printf("send Beacon\r\n");
+			//printf("send Beacon\r\n");
 			dmpkt = (DiscoMsg *)(call Packet.getPayload(&pkt, sizeof(DiscoMsg)));
 			createDiscoMsg(dmpkt,ID,counter,TSLOTms,prime1,prime2,T_BEACON,0);//create beacon msg
 			

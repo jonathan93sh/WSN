@@ -2,9 +2,9 @@
 #define DISCO_H
 #include "discoprimepairlut.h"
 enum{
-	AM_RADIO = 6,
-	TSLOTms = 35,
-	T_TIMEOUT_ms = 5
+	AM_RADIO = 0x22,
+	TSLOTms = 10,
+	T_TIMEOUT_ms = 8
 };
 
 enum DiscoMsgTypes{
